@@ -16,7 +16,7 @@ export async function generateSitemaps() {
     const departments = getAllDepartments();
     return [
         { id: 0 },
-        ...departments.map((d, i) => ({ id: i + 1 })),
+        ...departments.map((_d, i) => ({ id: i + 1 })),
     ];
 }
 
@@ -53,12 +53,14 @@ export default async function sitemap({
             priority: 0.7,
         }));
 
-        const deptPages: MetadataRoute.Sitemap = departments.map(d => ({
-            url: `${BASE_URL}/annuaire/${d.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')}-${d.code}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.6,
-        }));
+        const deptPages: MetadataRoute.Sitemap = departments
+            .filter(d => d && d.name && d.code)
+            .map(d => ({
+                url: `${BASE_URL}/annuaire/${d.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')}-${d.code}`,
+                lastModified: new Date(),
+                changeFrequency: 'monthly' as const,
+                priority: 0.6,
+            }));
 
         return [...staticPages, ...guidePages, ...brandPages, ...deptPages];
     }
@@ -68,6 +70,8 @@ export default async function sitemap({
     if (deptIndex < 0 || deptIndex >= departments.length) return [];
 
     const dept = departments[deptIndex];
+    if (!dept || !dept.code) return [];
+
     const deptCities = getCitiesByDepartment(dept.code);
 
     // Sort by population desc to prioritize major cities
@@ -76,14 +80,16 @@ export default async function sitemap({
     );
 
     // Generate URLs for each city × each category
-    const cityPages: MetadataRoute.Sitemap = sortedCities.flatMap(city =>
-        CATEGORY_SLUGS.map(catSlug => ({
-            url: `${BASE_URL}/${catSlug}/${city.slug}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
-            priority: (city.population || 0) > 50000 ? 0.6 : (city.population || 0) > 10000 ? 0.5 : 0.4,
-        }))
-    );
+    const cityPages: MetadataRoute.Sitemap = sortedCities
+        .filter(city => city && city.slug)
+        .flatMap(city =>
+            CATEGORY_SLUGS.map(catSlug => ({
+                url: `${BASE_URL}/${catSlug}/${city.slug}`,
+                lastModified: new Date(),
+                changeFrequency: 'monthly' as const,
+                priority: (city.population || 0) > 50000 ? 0.6 : (city.population || 0) > 10000 ? 0.5 : 0.4,
+            }))
+        );
 
     return cityPages;
 }
