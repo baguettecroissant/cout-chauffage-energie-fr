@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return generateCityMetadata(city, category.label, category.slug);
 }
 
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
-export const revalidate = 86400;
 
 export async function generateStaticParams() {
     const allSlugs = getAllCitySlugs();
