@@ -63,12 +63,6 @@ export function Footer() {
                     </div>
                 </div>
 
-                {/* Cross-linking */}
-                <div className="mt-10 pt-8 border-t border-zinc-700">
-                    <p className="text-zinc-500 text-xs text-center">
-                        Voir aussi : <Link href="https://www.ta-pompe-a-chaleur.fr" className="text-zinc-400 hover:text-orange-400 transition-colors">Géothermie vs Aérothermie</Link> · <Link href="https://www.cout-isolation-maison.fr" className="text-zinc-400 hover:text-orange-400 transition-colors">Isoler d&apos;abord, chauffer ensuite</Link>
-                    </p>
-                </div>
             </div>
 
             {/* Bottom bar */}
